@@ -1,4 +1,5 @@
 <script>
+    import meetupsStore from './meetups-store.js';
     import { createEventDispatcher } from 'svelte';
     import TextInput from '../UI/TextInput.svelte';
     import Button from '../UI/Button.svelte';
@@ -42,13 +43,27 @@
         emailValid;
 
     function submitForm() {
-        dispatch('save', {
+        // const e = event.detail;
+        // console.table(event.detail);
+        const meetupData = {
             title: title,
             subtitle: subtitle,
-            address: address,
-            email: email,
             description: description,
             imageUrl: imageUrl,
+            contactEmail: email,
+            address: address,
+        };
+
+        // meetups.push(newMeetup); // DOES NOT WORK!
+        meetupsStore.addMeetup(meetupData);
+
+        dispatch('save', {
+            // title: title,
+            // subtitle: subtitle,
+            // address: address,
+            // email: email,
+            // description: description,
+            // imageUrl: imageUrl,
         });
     }
 
