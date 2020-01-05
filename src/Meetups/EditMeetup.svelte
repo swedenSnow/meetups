@@ -24,6 +24,22 @@
     let imageUrl = '';
     // let imageUrlValid = false;
 
+    export let id = null;
+
+    if (id) {
+        const unsubscribe = meetupsStore.subscribe(items => {
+            const selectedMeetup = items.find(item => item.id === id);
+            title = selectedMeetup.title;
+            subtitle = selectedMeetup.subtitle;
+            address = selectedMeetup.address;
+            email = selectedMeetup.contactEmail;
+            description = selectedMeetup.description;
+            imageUrl = selectedMeetup.imageUrl;
+        });
+
+        unsubscribe();
+    }
+
     let formIsValid = false;
 
     const dispatch = createEventDispatcher();
@@ -55,20 +71,22 @@
         };
 
         // meetups.push(newMeetup); // DOES NOT WORK!
-        meetupsStore.addMeetup(meetupData);
+        if (id) {
+            meetupsStore.updateMeetup(id, meetupData);
+        } else {
+            meetupsStore.addMeetup(meetupData);
+        }
 
-        dispatch('save', {
-            // title: title,
-            // subtitle: subtitle,
-            // address: address,
-            // email: email,
-            // description: description,
-            // imageUrl: imageUrl,
-        });
+        dispatch('save');
     }
 
     function cancel() {
         dispatch('cancel');
+    }
+
+    function removeMeetup() {
+        meetupsStore.removeMeetup(id);
+        dispatch('save');
     }
 </script>
 
@@ -129,5 +147,8 @@
         <Button type="button" on:click={submitForm} disabled={!formIsValid}>
             Save
         </Button>
+        {#if id}
+            <Button type="button" on:click={removeMeetup}>Delete</Button>
+        {/if}
     </div>
 </Modal>

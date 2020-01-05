@@ -2,6 +2,7 @@
     import meetups from './Meetups/meetups-store.js';
     import Header from './UI/Header.svelte';
     import MeetupGrid from './Meetups/MeetupGrid.svelte';
+    import MeetupDetail from './Meetups/MeetupDetail.svelte';
     import TextInput from './UI/TextInput.svelte';
     import Button from './UI/Button.svelte';
     import EditForm from './Meetups/EditMeetup.svelte';
@@ -34,19 +35,39 @@
     // ];
 
     let editMode = null;
+    let page = 'overview';
+    let pageData = {};
+    let editedId;
 
-    function addMeetup(event) {
+    function savedMeetup(event) {
         editMode = null;
+        editedId = null;
     }
 
     function cancelEdit() {
         editMode = null;
+        editedId = null;
     }
 
     // function toggleFavorite(event) {
     //     const id = event.detail;
     //     loadedMeetups.toggleFavorite(id);
     // }
+
+    function showdetails(event) {
+        page = 'details';
+        pageData.id = event.detail;
+    }
+
+    function closeDetails() {
+        page = 'overview';
+        pageData = {};
+    }
+
+    function startEdit(event) {
+        editMode = 'edit';
+        editedId = event.detail;
+    }
 </script>
 
 <style>
@@ -61,14 +82,25 @@
 
 <Header />
 <main>
-    <div class="meetup-form-container">
-        <!-- If editMode was set to false would be easy to toggle... -->
-        <!-- <Button on:click={() => (editMode = !editMode)}>Make New</Button> -->
-        <Button on:click={() => (editMode = 'add')}>Make New</Button>
-    </div>
-    {#if editMode == 'add'}
-        <EditForm on:save={addMeetup} on:cancel={cancelEdit} />
+    {#if page === 'overview'}
+        <div class="meetup-form-container">
+            <!-- <Button on:click={() => (editMode = !editMode)}>Make New</Button> -->
+            <!-- If editMode was set to false would be easy to toggle... -->
+            <Button on:click={() => (editMode = 'edit')}>Make New</Button>
+        </div>
+        {#if editMode === 'edit'}
+            <EditForm
+                id={editedId}
+                on:save={savedMeetup}
+                on:cancel={cancelEdit} />
+        {/if}
+
+        <MeetupGrid
+            meetups={$loadedMeetups}
+            on:showdetails={showdetails}
+            on:edit={startEdit} />
+    {:else}
+        <MeetupDetail id={pageData.id} on:close={closeDetails} />
     {/if}
-    <!-- <MeetupGrid meetups={$loadedMeetups} on:togglefavorite={toggleFavorite} /> -->
-    <MeetupGrid meetups={$loadedMeetups} />
+
 </main>
