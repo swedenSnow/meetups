@@ -74,20 +74,13 @@
     main {
         margin-top: 5rem;
     }
-
-    .meetup-form-container {
-        margin: 1rem;
-    }
 </style>
 
 <Header />
 <main>
     {#if page === 'overview'}
-        <div class="meetup-form-container">
-            <!-- <Button on:click={() => (editMode = !editMode)}>Make New</Button> -->
-            <!-- If editMode was set to false would be easy to toggle... -->
-            <Button on:click={() => (editMode = 'edit')}>Make New</Button>
-        </div>
+        <!-- <Button on:click={() => (editMode = !editMode)}>Make New</Button> -->
+        <!-- If editMode was set to false would be easy to toggle... -->
         {#if editMode === 'edit'}
             <EditForm
                 id={editedId}
@@ -98,7 +91,8 @@
         <MeetupGrid
             meetups={$loadedMeetups}
             on:showdetails={showdetails}
-            on:edit={startEdit} />
+            on:edit={startEdit}
+            on:add={() => (editMode = 'edit')} />
     {:else}
         <MeetupDetail id={pageData.id} on:close={closeDetails} />
     {/if}
