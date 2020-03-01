@@ -1,4 +1,6 @@
 <script>
+    import { fade, fly } from 'svelte/transition';
+    import { cubicIn } from 'svelte/easing';
     import { createEventDispatcher } from 'svelte';
     import Button from './Button.svelte';
 
@@ -8,6 +10,12 @@
 
     function closeModal() {
         dispatch('cancel');
+    }
+
+    function which() {
+        if (e.which === 27) {
+            dispatch('cancel');
+        }
     }
 </script>
 
@@ -58,8 +66,11 @@
     }
 </style>
 
-<div class="modal-backdrop" on:click={closeModal} />
-<div class="modal">
+<div transition:fade class="modal-backdrop" on:click={closeModal} />
+<div
+    class="modal"
+    transition:fly={{ y: 300 }}
+    on:keydown={e => e.which === 27 && closeModal()}>
     <h2>{title}</h2>
     <div class="content">
         <slot />

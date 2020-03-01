@@ -1,4 +1,5 @@
 <script>
+    import meetupsStore from './meetups-store.js';
     import { createEventDispatcher } from 'svelte';
     import TextInput from '../UI/TextInput.svelte';
     import Button from '../UI/Button.svelte';
@@ -23,6 +24,22 @@
     let imageUrl = '';
     // let imageUrlValid = false;
 
+    export let id = null;
+
+    if (id) {
+        const unsubscribe = meetupsStore.subscribe(items => {
+            const selectedMeetup = items.find(item => item.id === id);
+            title = selectedMeetup.title;
+            subtitle = selectedMeetup.subtitle;
+            address = selectedMeetup.address;
+            email = selectedMeetup.contactEmail;
+            description = selectedMeetup.description;
+            imageUrl = selectedMeetup.imageUrl;
+        });
+
+        unsubscribe();
+    }
+
     let formIsValid = false;
 
     const dispatch = createEventDispatcher();
@@ -42,18 +59,68 @@
         emailValid;
 
     function submitForm() {
-        dispatch('save', {
+        // const e = event.detail;
+        // console.table(event.detail);
+        const meetupData = {
             title: title,
             subtitle: subtitle,
-            address: address,
-            email: email,
             description: description,
             imageUrl: imageUrl,
-        });
+            contactEmail: email,
+            address: address,
+        };
+
+        // meetups.push(newMeetup); // DOES NOT WORK!
+        if (id) {
+            fetch(
+                `https://svelte-course-6d25d.firebaseio.com/meetups/${id}.json`,
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify(meetupData),
+                    headers: { 'Content-Type': 'application/json' },
+                }
+            )
+                .then(res => {
+                    if (!res.ok || res.status !== 200) {
+                        throw new Error(`Epic Fail! 😒 ${res.status}`);
+                    }
+                    meetupsStore.updateMeetup(id, meetupData);
+                })
+                .catch(err => console.log(err));
+        } else {
+            fetch('https://svelte-course-6d25d.firebaseio.com/meetups.json', {
+                method: 'POST',
+                body: JSON.stringify({ ...meetupData, isFavorite: false }),
+                headers: { 'Content-Type': 'application/json' },
+            })
+                .then(res => {
+                    if (!res.ok || res.status !== 200) {
+                        throw new Error('Epic Fail! 😒');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    meetupsStore.addMeetup({
+                        ...meetupData,
+                        isFavorite: false,
+                        id: data.name,
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
+
+        dispatch('save');
     }
 
     function cancel() {
         dispatch('cancel');
+    }
+
+    function removeMeetup() {
+        meetupsStore.removeMeetup(id);
+        dispatch('save');
     }
 </script>
 
@@ -114,5 +181,8 @@
         <Button type="button" on:click={submitForm} disabled={!formIsValid}>
             Save
         </Button>
+        {#if id}
+            <Button type="button" on:click={removeMeetup}>Delete</Button>
+        {/if}
     </div>
 </Modal>
