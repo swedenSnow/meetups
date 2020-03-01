@@ -11,7 +11,8 @@ export function isValidEmail(value) {
 }
 
 export function isValidUrl(value) {
-    const rgx = /(http)?s?:?(\/\/[^"']*\.(?:png|jpg|jpeg|gif|png|svg))/g;
-    return new RegExp(rgx).test(value);
-    // return value.trim().length === 0;s
+    // const rgx = /(http)?s?:?(\/\/[^"']*\.(?:png|jpg|jpeg|gif|png|svg))/g;
+    // return new RegExp(rgx).test(value);
+    // return value.trim().length === 0;
+    return value
 }

@@ -72,9 +72,43 @@
 
         // meetups.push(newMeetup); // DOES NOT WORK!
         if (id) {
-            meetupsStore.updateMeetup(id, meetupData);
+            fetch(
+                `https://svelte-course-6d25d.firebaseio.com/meetups/${id}.json`,
+                {
+                    method: 'PATCH',
+                    body: JSON.stringify(meetupData),
+                    headers: { 'Content-Type': 'application/json' },
+                }
+            )
+                .then(res => {
+                    if (!res.ok || res.status !== 200) {
+                        throw new Error(`Epic Fail! 😒 ${res.status}`);
+                    }
+                    meetupsStore.updateMeetup(id, meetupData);
+                })
+                .catch(err => console.log(err));
         } else {
-            meetupsStore.addMeetup(meetupData);
+            fetch('https://svelte-course-6d25d.firebaseio.com/meetups.json', {
+                method: 'POST',
+                body: JSON.stringify({ ...meetupData, isFavorite: false }),
+                headers: { 'Content-Type': 'application/json' },
+            })
+                .then(res => {
+                    if (!res.ok || res.status !== 200) {
+                        throw new Error('Epic Fail! 😒');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    meetupsStore.addMeetup({
+                        ...meetupData,
+                        isFavorite: false,
+                        id: data.name,
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
 
         dispatch('save');

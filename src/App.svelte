@@ -6,8 +6,8 @@
     import TextInput from './UI/TextInput.svelte';
     import Button from './UI/Button.svelte';
     import EditForm from './Meetups/EditMeetup.svelte';
+    import LoadingSpinner from './UI/LoadingSpinner.svelte';
 
-    let loadedMeetups = meetups;
     // let meetups = [
     //     {
     //         id: 'm1',
@@ -34,10 +34,37 @@
     //     },
     // ];
 
+    let loadedMeetups = meetups;
     let editMode = null;
     let page = 'overview';
     let pageData = {};
     let editedId;
+    let isLoading = true;
+
+    fetch('https://svelte-course-6d25d.firebaseio.com/meetups.json')
+        .then(res => {
+            if (!res.ok || res.status !== 200) {
+                throw new Error('Failed fetching data. Please come again 😚');
+            }
+            return res.json();
+        })
+        .then(data => {
+            const loadedMeetup = [];
+            for (const key in data) {
+                loadedMeetup.push({
+                    ...data[key],
+                    id: key,
+                });
+            }
+            setTimeout(() => {
+                isLoading = false;
+                meetups.setMeetups(loadedMeetup);
+            }, 2000);
+        })
+        .catch(err => {
+            isLoading = false;
+            console.log(err);
+        });
 
     function savedMeetup(event) {
         editMode = null;
@@ -87,12 +114,15 @@
                 on:save={savedMeetup}
                 on:cancel={cancelEdit} />
         {/if}
-
-        <MeetupGrid
-            meetups={$loadedMeetups}
-            on:showdetails={showdetails}
-            on:edit={startEdit}
-            on:add={() => (editMode = 'edit')} />
+        {#if isLoading}
+            <LoadingSpinner />
+        {:else}
+            <MeetupGrid
+                meetups={$loadedMeetups}
+                on:showdetails={showdetails}
+                on:edit={startEdit}
+                on:add={() => (editMode = 'edit')} />
+        {/if}
     {:else}
         <MeetupDetail id={pageData.id} on:close={closeDetails} />
     {/if}

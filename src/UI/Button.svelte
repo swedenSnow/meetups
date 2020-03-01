@@ -12,7 +12,7 @@
     a {
         font: inherit;
         border: 1px solid #ff3e00;
-        background: #ff3e00;
+        background: hsl(200, 18%, 26%);
         padding: 0.5rem 1rem;
         color: white;
         border-radius: 5px;
@@ -29,7 +29,7 @@
     button:active,
     a:hover,
     a:active {
-        background: #fdc713;
+        background: #7e7864;
         border-color: #fdc713;
         box-shadow: 1px 1px 8px rgba(77, 51, 51, 0.26);
     }

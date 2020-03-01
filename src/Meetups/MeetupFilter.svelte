@@ -33,9 +33,13 @@
     }
 
     button:hover,
+    .active {
+        background: #7e7864;
+        border-color: #fdc713;
+    }
     button:active,
     .active {
-        background: #ff3e00;
+        background: hsl(200, 18%, 26%);
         border-color: #ff3e00;
         color: white;
     }

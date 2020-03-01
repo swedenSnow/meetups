@@ -1,5 +1,8 @@
 <script>
     import { createEventDispatcher } from 'svelte';
+    // import { scale } from 'svelte/transition';
+    // import { flip } from 'svelte/animate';
+    // import { cubicIn } from 'svelte/easing';
     import meetupsStore from '../Meetups/meetups-store.js';
     import Button from '../UI/Button.svelte';
     import Badge from '../UI/Badge.svelte';
@@ -53,10 +56,12 @@
     }
 
     h1.is-favorite {
-        background: #01a129;
+        /* background: #01a129;
         color: white;
         padding: 0 0.5rem;
-        border-radius: 5px;
+        border-radius: 5px; 
+        */
+        text-decoration: underline;
     }
 
     h2 {
@@ -81,7 +86,7 @@
 
 <article>
     <header>
-        <h1>
+        <h1 class={isFav ? 'is-favorite' : ''}>
             {title}
             {#if isFav}
                 <Badge>&reg; This my joint bruh &reg;</Badge>

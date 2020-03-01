@@ -1,3 +1,9 @@
+<script>
+    import { cubicIn } from 'svelte/easing';
+    import { fade, fly, slide, scale } from 'svelte/transition';
+    import { flip } from 'svelte/animate';
+</script>
+
 <style>
     span {
         display: inline-block;
@@ -12,6 +18,6 @@
     }
 </style>
 
-<span>
+<span transition:slide={{ easing: cubicIn, duration: 150, x: 0, y: -300 }}>
     <slot />
 </span>

@@ -43,6 +43,7 @@
         text-align: center;
         width: 80%;
         margin: auto;
+        color: hsl(39, 63%, 91%);
     }
 
     h1 {
@@ -67,7 +68,7 @@
     </div>
     <div class="content">
         <h1>{selectedMeetup.title} - {selectedMeetup.address}</h1>
-        <h2>z{selectedMeetup.subtitle}</h2>
+        <h2> {selectedMeetup.subtitle}</h2>
         <p>{selectedMeetup.description}</p>
         <Button href="mailto:{selectedMeetup.contactEmail}">Contact</Button>
         <Button type="button" mode="outline" on:click={() => dispatch('close')}>
