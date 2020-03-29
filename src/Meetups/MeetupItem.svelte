@@ -6,6 +6,8 @@
     import meetupsStore from '../Meetups/meetups-store.js';
     import Button from '../UI/Button.svelte';
     import Badge from '../UI/Badge.svelte';
+    import SmallSpinner from '../UI/SmallSpinner.svelte';
+    import LoadingSpinner from '../UI/LoadingSpinner.svelte';
 
     export let id;
     export let title;
@@ -16,11 +18,29 @@
     // export let email;
     export let isFav;
 
+    let isLoading = false;
+
     const dispatch = createEventDispatcher();
 
     // const dispatch = createEventDispatcher();
     function toggleFavorite() {
-        meetupsStore.toggleFavorite(id);
+        isLoading = true;
+        fetch(`https://svelte-course-6d25d.firebaseio.com/meetups/${id}.json`, {
+            method: 'PATCH',
+            body: JSON.stringify({ isFavorite: !isFav }),
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then(res => {
+                if (!res.ok || res.status !== 200) {
+                    throw new Error(`Epic Fail! 😒 ${res.status}`);
+                }
+                meetupsStore.toggleFavorite(id);
+                isLoading = false;
+            })
+            .catch(err => {
+                isLoading = false;
+                console.log(err);
+            });
     }
 </script>
 
@@ -36,6 +56,12 @@
     .content,
     footer {
         padding: 1rem;
+    }
+    .footer--item {
+        display: flex;
+    }
+    .footer--item > * {
+        margin: 0 1rem;
     }
 
     .image {
@@ -101,7 +127,7 @@
     <div class="content">
         <p>{description}</p>
     </div>
-    <footer>
+    <footer class="footer--item">
         <!-- <Button href="mailto:{email}">Contact</Button> -->
         <Button
             mode="outline"
@@ -111,13 +137,19 @@
             }}>
             Edit
         </Button>
-        <Button
-            color={isFav ? null : 'success'}
-            mode="outline"
-            type="button"
-            on:click={toggleFavorite}>
-            {isFav ? 'Unfavorite' : 'Favorite'}
-        </Button>
+        {#if isLoading}
+            <span class="small-spinner">
+                <SmallSpinner />
+            </span>
+        {:else}
+            <Button
+                color={isFav ? null : 'success'}
+                mode="outline"
+                type="button"
+                on:click={toggleFavorite}>
+                {isFav ? 'Unfavorite' : 'Favorite'}
+            </Button>
+        {/if}
         <Button type="button" on:click={() => dispatch('showdetails', id)}>
             Show Details
         </Button>

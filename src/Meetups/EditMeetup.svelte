@@ -24,6 +24,8 @@
     let imageUrl = '';
     // let imageUrlValid = false;
 
+    let error;
+
     export let id = null;
 
     if (id) {
@@ -86,7 +88,10 @@
                     }
                     meetupsStore.updateMeetup(id, meetupData);
                 })
-                .catch(err => console.log(err));
+                .catch(err => {
+                    error = err;
+                    console.log(err);
+                });
         } else {
             fetch('https://svelte-course-6d25d.firebaseio.com/meetups.json', {
                 method: 'POST',
@@ -107,6 +112,7 @@
                     });
                 })
                 .catch(err => {
+                    error = err;
                     console.log(err);
                 });
         }
@@ -119,7 +125,16 @@
     }
 
     function removeMeetup() {
-        meetupsStore.removeMeetup(id);
+        fetch(`https://svelte-course-6d25d.firebaseio.com/meetups/${id}.json`, {
+            method: 'DELETE',
+        })
+            .then(res => {
+                if (!res.ok || res.status !== 200) {
+                    throw new Error(`Epic Fail! 😒 ${res.status}`);
+                }
+                meetupsStore.removeMeetup(id);
+            })
+            .catch(err => console.log(err));
         dispatch('save');
     }
 </script>
