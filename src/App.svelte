@@ -43,6 +43,9 @@
     let isLoading = true;
     let error;
 
+    // let y;
+    // $: console.log(y);
+
     fetch('https://svelte-course-6d25d.firebaseio.com/meetups.json')
         .then(res => {
             if (!res.ok) {
@@ -115,6 +118,8 @@
     <Error message={error.message} on:cancel={clearError} />
 {/if}
 
+<!-- <svelte:window on:keydown={() => alert('Hey keydown')} /> -->
+<!-- <svelte:window bind:scrollY={y} /> -->
 <Header />
 <main>
     {#if page === 'overview'}
